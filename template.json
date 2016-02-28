@@ -1,0 +1,52 @@
+{
+  "variables": {
+    "os": "",
+    "source": "source",
+    "username": "",
+    "vm_name": ""
+  },
+  "builders": [
+    {
+      "type": "virtualbox-ovf",
+      "name": "vbox-ovf",
+      "vm_name": "{{user `vm_name`}}",
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--vram", "32"],
+        ["modifyvm", "{{.Name}}", "--memory", "4096"]
+      ],
+      "headless" : 0,
+      "source_path": "{{user `source`}}/{{user `os`}}/box.ovf",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "shutdown_command": "sudo shutdown -P now",
+      "guest_additions_mode": "disable"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "scripts/provision.sh"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "vagrant",
+        "compression_level": 9,
+        "keep_input_artifact": false,
+        "output": "{{user `os`}}.box"
+      },
+      {
+        "type": "atlas",
+        "only": [
+          "vbox-ovf"
+        ],
+        "artifact": "{{user `username`}}/{{user `vm_name`}}",
+        "artifact_type": "vagrant.box",
+        "metadata": {
+          "provider": "virtualbox"
+        }
+      }
+    ]
+  ]
+}
