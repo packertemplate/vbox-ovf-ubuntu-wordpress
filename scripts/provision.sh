@@ -62,5 +62,8 @@ sudo chown -R www-data:www-data /usr/share/nginx/wordpress
 sudo touch /usr/local/wp.done 
 }
 
+sed -i '/tty/!s/mesg n/tty -s \&\& mesg n/' /home/vagrant/.profile
+sudo sed -i '/tty/!s/mesg n/tty -s \&\& mesg n/' /root/.profile
+
 sudo sudo -E -H apt-get clean
 [ -f /etc/udev/rules.d/70-persistent-net.rule ] && sudo rm -f /etc/udev/rules.d/70-persistent-net.rule || true
